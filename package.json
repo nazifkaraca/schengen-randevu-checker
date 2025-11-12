@@ -1,0 +1,49 @@
+{
+  "name": "schengen-randevu-checker",
+  "version": "1.0.0",
+  "description": "Schengen visa appointment checker and manager for Turkey - 25 countries supported with real-time availability check",
+  "main": "index.js",
+  "scripts": {
+    "test": "node example.js",
+    "kontrol": "node example-real.js",
+    "toplu-kontrol": "node example-real.js --toplu"
+  },
+  "keywords": [
+    "schengen",
+    "visa",
+    "appointment",
+    "vize",
+    "randevu",
+    "turkey",
+    "turkiye",
+    "konsolosluk",
+    "embassy",
+    "vfs-global",
+    "bls",
+    "germany",
+    "france",
+    "spain",
+    "italy",
+    "netherlands",
+    "checker",
+    "availability",
+    "booking"
+  ],
+  "author": "İhsan Baki Doğan <info@ihsanbakidogan.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ibidi/schengen-randevu-checker.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ibidi/schengen-randevu-checker/issues"
+  },
+  "homepage": "https://github.com/ibidi/schengen-randevu-checker#readme",
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "dependencies": {
+    "axios": "^1.6.0",
+    "cheerio": "^1.0.0-rc.12"
+  }
+}

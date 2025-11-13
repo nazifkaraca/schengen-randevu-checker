@@ -27,6 +27,18 @@ class SchengenRandevu {
     this.sehir = options.sehir || 'ankara';
     this.randevular = [];
     
+    // Veritabanı desteği (opsiyonel)
+    this.database = null;
+    this.useDatabase = options.database ? true : false;
+    
+    if (options.database) {
+      const { DatabaseFactory } = require('./src/database');
+      this.database = DatabaseFactory.create(
+        options.database.type,
+        options.database.config
+      );
+    }
+    
     // Schengen ülkeleri
     this.schengenUlkeleri = [
       'almanya', 'avusturya', 'belcika', 'cekyarepublik', 'danimarka',
@@ -372,9 +384,18 @@ class SchengenRandevu {
   }
 
   /**
-   * Randevu oluştur
-   * @param {Object} randevu - Randevu bilgileri
-   * @returns {Object}
+   * ⚠️ KİŞİSEL RANDEVU KAYDI OLUŞTUR (RESMİ RANDEVU OLUŞTURMAZ!)
+   * 
+   * Bu fonksiyon resmi kanallardan aldığınız randevu bilgilerini
+   * kişisel kayıtlarınızda saklamanız içindir.
+   * 
+   * RESMİ RANDEVU ALMAK İÇİN:
+   * - Konsolosluk resmi web sitesini kullanın
+   * - VFS Global resmi platformunu kullanın
+   * - BLS International resmi platformunu kullanın
+   * 
+   * @param {Object} randevu - Resmi kanaldan aldığınız randevu bilgileri
+   * @returns {Object} Kişisel kayıt bilgileri
    */
   randevuOlustur(randevu) {
     if (!this.schengenMi(randevu.ulke)) {
@@ -410,9 +431,9 @@ class SchengenRandevu {
   }
 
   /**
-   * Randevu sorgula
-   * @param {number|string} idVeyaReferans - Randevu ID veya referans no
-   * @returns {Object|null}
+   * Kişisel randevu kaydını sorgula
+   * @param {number|string} idVeyaReferans - Kayıt ID veya referans no
+   * @returns {Object|null} Kişisel kayıt bilgileri
    */
   randevuSorgula(idVeyaReferans) {
     if (typeof idVeyaReferans === 'number') {
@@ -485,9 +506,13 @@ class SchengenRandevu {
   }
 
   /**
-   * Randevu iptal et
-   * @param {number|string} idVeyaReferans
-   * @returns {boolean}
+   * Kişisel randevu kaydını iptal et
+   * 
+   * ⚠️ UYARI: Bu sadece bu sistemdeki kişisel kaydı iptal eder.
+   * Resmi randevunuzu iptal etmek için resmi kanalları kullanın!
+   * 
+   * @param {number|string} idVeyaReferans - Kayıt ID veya referans no
+   * @returns {boolean} İşlem başarılı mı
    */
   randevuIptal(idVeyaReferans) {
     const randevu = this.randevuSorgula(idVeyaReferans);
@@ -497,6 +522,299 @@ class SchengenRandevu {
       return true;
     }
     return false;
+  }
+
+  /**
+   * Randevuları JSON formatında export et
+   * @returns {string} JSON string
+   */
+  exportJSON() {
+    return JSON.stringify({
+      version: '1.0',
+      exportDate: new Date().toISOString(),
+      randevular: this.randevular,
+      sehir: this.sehir
+    }, null, 2);
+  }
+
+  /**
+   * JSON'dan randevuları import et
+   * @param {string} jsonString - JSON string
+   * @returns {Object} Import sonucu
+   */
+  importJSON(jsonString) {
+    try {
+      const data = JSON.parse(jsonString);
+      
+      if (!data.randevular || !Array.isArray(data.randevular)) {
+        throw new Error('Geçersiz JSON formatı');
+      }
+
+      const eskiSayi = this.randevular.length;
+      
+      // Tarihleri Date objesine çevir
+      data.randevular.forEach(randevu => {
+        if (randevu.randevuTarihi) {
+          randevu.randevuTarihi = new Date(randevu.randevuTarihi);
+        }
+        if (randevu.olusturmaTarihi) {
+          randevu.olusturmaTarihi = new Date(randevu.olusturmaTarihi);
+        }
+        if (randevu.iptalTarihi) {
+          randevu.iptalTarihi = new Date(randevu.iptalTarihi);
+        }
+      });
+
+      this.randevular = data.randevular;
+      
+      return {
+        basarili: true,
+        mesaj: `${data.randevular.length} randevu import edildi`,
+        eskiSayi,
+        yeniSayi: this.randevular.length
+      };
+    } catch (error) {
+      return {
+        basarili: false,
+        mesaj: `Import hatası: ${error.message}`
+      };
+    }
+  }
+
+  /**
+   * Randevuları CSV formatında export et
+   * @returns {string} CSV string
+   */
+  exportCSV() {
+    const headers = [
+      'ID',
+      'Referans No',
+      'Ad',
+      'Soyad',
+      'Pasaport No',
+      'Ülke',
+      'Şehir',
+      'Vize Tipi',
+      'Randevu Tarihi',
+      'Randevu Saati',
+      'Durum',
+      'Oluşturma Tarihi'
+    ];
+
+    const rows = this.randevular.map(r => [
+      r.id,
+      r.referansNo,
+      r.ad,
+      r.soyad,
+      r.pasaportNo,
+      r.ulke,
+      r.sehir,
+      r.vizeTipi,
+      r.randevuTarihi.toISOString().split('T')[0],
+      r.randevuSaati,
+      r.durum,
+      r.olusturmaTarihi.toISOString()
+    ]);
+
+    const csv = [headers, ...rows]
+      .map(row => row.map(cell => `"${cell}"`).join(','))
+      .join('\n');
+
+    return csv;
+  }
+
+  /**
+   * İstatistikleri getir
+   * @returns {Object} İstatistikler
+   */
+  istatistikler() {
+    const toplamRandevu = this.randevular.length;
+    const aktifRandevu = this.randevular.filter(r => r.durum === 'beklemede').length;
+    const iptalRandevu = this.randevular.filter(r => r.durum === 'iptal').length;
+    const onaylananRandevu = this.randevular.filter(r => r.durum === 'onaylandı').length;
+
+    // Ülkelere göre dağılım
+    const ulkeDagilim = {};
+    this.randevular.forEach(r => {
+      ulkeDagilim[r.ulke] = (ulkeDagilim[r.ulke] || 0) + 1;
+    });
+
+    // En çok başvurulan ülke
+    const enCokBasvurulan = Object.keys(ulkeDagilim).reduce((a, b) => 
+      ulkeDagilim[a] > ulkeDagilim[b] ? a : b, null
+    );
+
+    return {
+      toplamRandevu,
+      aktifRandevu,
+      iptalRandevu,
+      onaylananRandevu,
+      ulkeDagilim,
+      enCokBasvurulan
+    };
+  }
+
+  /**
+   * Yaklaşan randevuları getir
+   * @param {number} gunSayisi - Kaç gün içindeki randevular (default: 30)
+   * @returns {Array} Yaklaşan randevular
+   */
+  yaklasanRandevular(gunSayisi = 30) {
+    const bugun = new Date();
+    const gelecek = new Date();
+    gelecek.setDate(bugun.getDate() + gunSayisi);
+
+    return this.randevular.filter(r => {
+      const randevuTarih = new Date(r.randevuTarihi);
+      return randevuTarih >= bugun && randevuTarih <= gelecek && r.durum !== 'iptal';
+    }).sort((a, b) => new Date(a.randevuTarihi) - new Date(b.randevuTarihi));
+  }
+
+  /**
+   * Randevu durumunu güncelle
+   * @param {number|string} idVeyaReferans
+   * @param {string} yeniDurum - 'beklemede', 'onaylandı', 'reddedildi', 'iptal'
+   * @returns {Object|null}
+   */
+  durumGuncelle(idVeyaReferans, yeniDurum) {
+    const randevu = this.randevuSorgula(idVeyaReferans);
+    if (randevu) {
+      randevu.durum = yeniDurum;
+      randevu.durumGuncellemeTarihi = new Date();
+      return randevu;
+    }
+    return null;
+  }
+
+  /**
+   * Veritabanına bağlan
+   * @returns {Promise<boolean>}
+   */
+  async connectDatabase() {
+    if (!this.database) {
+      throw new Error('Veritabanı konfigürasyonu yapılmamış');
+    }
+    return await this.database.connect();
+  }
+
+  /**
+   * Veritabanı bağlantısını kapat
+   * @returns {Promise<boolean>}
+   */
+  async disconnectDatabase() {
+    if (!this.database) {
+      throw new Error('Veritabanı konfigürasyonu yapılmamış');
+    }
+    return await this.database.disconnect();
+  }
+
+  /**
+   * Randevuyu veritabanına kaydet
+   * @param {Object} randevu
+   * @returns {Promise<Object>}
+   */
+  async saveToDatabase(randevu) {
+    if (!this.database) {
+      throw new Error('Veritabanı konfigürasyonu yapılmamış');
+    }
+    return await this.database.saveRandevu(randevu);
+  }
+
+  /**
+   * Veritabanından randevu getir
+   * @param {string} id
+   * @returns {Promise<Object|null>}
+   */
+  async getFromDatabase(id) {
+    if (!this.database) {
+      throw new Error('Veritabanı konfigürasyonu yapılmamış');
+    }
+    return await this.database.getRandevu(id);
+  }
+
+  /**
+   * Veritabanından tüm randevuları getir
+   * @returns {Promise<Array>}
+   */
+  async getAllFromDatabase() {
+    if (!this.database) {
+      throw new Error('Veritabanı konfigürasyonu yapılmamış');
+    }
+    return await this.database.getAllRandevular();
+  }
+
+  /**
+   * Veritabanındaki randevuyu güncelle
+   * @param {string} id
+   * @param {Object} data
+   * @returns {Promise<Object|null>}
+   */
+  async updateInDatabase(id, data) {
+    if (!this.database) {
+      throw new Error('Veritabanı konfigürasyonu yapılmamış');
+    }
+    return await this.database.updateRandevu(id, data);
+  }
+
+  /**
+   * Veritabanından randevu sil
+   * @param {string} id
+   * @returns {Promise<boolean>}
+   */
+  async deleteFromDatabase(id) {
+    if (!this.database) {
+      throw new Error('Veritabanı konfigürasyonu yapılmamış');
+    }
+    return await this.database.deleteRandevu(id);
+  }
+
+  /**
+   * Lokal randevuları veritabanına senkronize et
+   * @returns {Promise<Object>}
+   */
+  async syncToDatabase() {
+    if (!this.database) {
+      throw new Error('Veritabanı konfigürasyonu yapılmamış');
+    }
+
+    const results = {
+      basarili: 0,
+      basarisiz: 0,
+      hatalar: []
+    };
+
+    for (const randevu of this.randevular) {
+      try {
+        await this.database.saveRandevu(randevu);
+        results.basarili++;
+      } catch (error) {
+        results.basarisiz++;
+        results.hatalar.push({
+          randevu: randevu.referansNo,
+          hata: error.message
+        });
+      }
+    }
+
+    return results;
+  }
+
+  /**
+   * Veritabanından lokal'e senkronize et
+   * @returns {Promise<Object>}
+   */
+  async syncFromDatabase() {
+    if (!this.database) {
+      throw new Error('Veritabanı konfigürasyonu yapılmamış');
+    }
+
+    const randevular = await this.database.getAllRandevular();
+    this.randevular = randevular;
+
+    return {
+      basarili: true,
+      sayi: randevular.length
+    };
   }
 }
 

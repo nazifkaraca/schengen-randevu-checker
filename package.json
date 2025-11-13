@@ -1,12 +1,15 @@
 {
   "name": "schengen-randevu-checker",
   "version": "1.0.1",
-  "description": "Educational tool for Schengen visa center information management - Contact details, URLs, and personal appointment tracking (NOT for automated booking)",
+  "description": "Educational tool for Schengen visa center information and personal record management - Does NOT create official appointments or automate booking. For information and personal tracking only.",
   "main": "index.js",
   "scripts": {
     "test": "node example.js",
     "kontrol": "node example-real.js",
-    "toplu-kontrol": "node example-real.js --toplu"
+    "toplu-kontrol": "node example-real.js --toplu",
+    "demo": "node example-features.js",
+    "demo:mongodb": "node examples/mongodb-example.js",
+    "demo:supabase": "node examples/supabase-example.js"
   },
   "keywords": [
     "schengen",
@@ -44,7 +47,18 @@
   },
   "dependencies": {
     "axios": "^1.6.0",
-    "cheerio": "^1.0.0-rc.12",
-    "schengen-randevu-checker": "^1.0.0"
+    "cheerio": "^1.0.0-rc.12"
+  },
+  "peerDependencies": {
+    "mongodb": "^6.0.0",
+    "@supabase/supabase-js": "^2.38.0"
+  },
+  "peerDependenciesMeta": {
+    "mongodb": {
+      "optional": true
+    },
+    "@supabase/supabase-js": {
+      "optional": true
+    }
   }
 }

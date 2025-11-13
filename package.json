@@ -1,6 +1,6 @@
 {
   "name": "schengen-randevu-checker",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Educational tool for Schengen visa center information and personal record management - Does NOT create official appointments or automate booking. For information and personal tracking only.",
   "main": "index.js",
   "scripts": {

@@ -22,299 +22,81 @@ Modern TypeScript library for checking Schengen visa appointment availability ac
 npm install schengen-randevu-checker
 ```
 
-## 📖 Quick Start
+# Swagger API Dokümantasyonu - Hızlı Başlangıç
 
-### TypeScript
+## 🚀 Kurulum ve Başlatma
 
-```typescript
-import { SchengenChecker } from 'schengen-randevu-checker';
+### 1. Sunucuyu Başlat
 
-const checker = new SchengenChecker({ 
-  sehir: 'ankara',
-  rateLimit: 2000 
-});
-
-// Check single country
-const result = await checker.musaitRandevuKontrol('fransa');
-console.log(result);
-// {
-//   ulke: 'fransa',
-//   durum: 'dolu',
-//   mesaj: 'Şu an müsait randevu bulunmuyor',
-//   url: 'https://france-visas.gouv.fr/...',
-//   kontrolTarihi: 2025-11-13T19:00:00.000Z
-// }
-
-// Check multiple countries
-const results = await checker.topluRandevuKontrol([
-  'fransa', 
-  'hollanda', 
-  'almanya'
-]);
+```bash
+npm run server
 ```
 
-### JavaScript (CommonJS)
+### 2. Swagger UI'ı Aç
 
-```javascript
-const { SchengenChecker } = require('schengen-randevu-checker');
+Tarayıcınızda şu adresi açın:
 
-const checker = new SchengenChecker({ sehir: 'ankara' });
-
-checker.musaitRandevuKontrol('fransa').then(result => {
-  console.log(result);
-});
+```
+http://localhost:3000/api-docs
 ```
 
-## 🌍 Supported Countries (17)
+## 📚 Swagger UI Kullanımı
 
-| Country | Code | Cities |
-|---------|------|--------|
-| 🇫🇷 France | `fransa` | Ankara, Istanbul, Izmir |
-| 🇳🇱 Netherlands | `hollanda` | Ankara, Istanbul |
-| 🇩🇪 Germany | `almanya` | Ankara, Istanbul, Izmir |
-| 🇪🇸 Spain | `ispanya` | Ankara, Istanbul, Izmir |
-| 🇮🇹 Italy | `italya` | Ankara, Istanbul, Izmir |
-| 🇸🇪 Sweden | `isvec` | Ankara, Istanbul |
-| 🇨🇿 Czech Republic | `cekyarepublik` | Ankara, Istanbul |
-| 🇭🇷 Croatia | `hirvatistan` | Ankara |
-| 🇧🇬 Bulgaria | `bulgaristan` | Ankara, Istanbul |
-| 🇫🇮 Finland | `finlandiya` | Ankara, Istanbul |
-| 🇸🇮 Slovenia | `slovenya` | Ankara |
-| 🇩🇰 Denmark | `danimarka` | Ankara, Istanbul |
-| 🇳🇴 Norway | `norvec` | Ankara, Istanbul |
-| 🇪🇪 Estonia | `estonya` | Ankara |
-| 🇱🇹 Lithuania | `litvanya` | Ankara |
-| 🇱🇺 Luxembourg | `luksemburg` | Ankara |
-| 🇱🇻 Latvia | `letonya` | Ankara |
+### Endpoint Test Etme
 
-## 📚 API Reference
+1. Swagger UI'da test etmek istediğiniz endpoint'i seçin
+2. "Try it out" butonuna tıklayın
+3. Gerekli parametreleri doldurun
+4. "Execute" butonuna tıklayın
+5. Response'u inceleyin
 
-### Constructor
+### Örnek: Randevu Kontrolü
 
-```typescript
-new SchengenChecker(options?: SchengenCheckerOptions)
-```
+1. `POST /api/randevu-kontrol` endpoint'ini aç
+2. "Try it out" tıkla
+3. Request body'yi düzenle:
 
-**Options:**
-- `sehir?: string` - Default city (default: `'ankara'`)
-- `rateLimit?: number` - Delay between requests in ms (default: `2000`)
-
-### Methods
-
-#### `musaitRandevuKontrol(ulke: string, options?: KontrolOptions): Promise<RandevuKontrolSonuc>`
-
-Check appointment availability for a single country.
-
-```typescript
-const result = await checker.musaitRandevuKontrol('fransa', {
-  sehir: 'istanbul',
-  vizeTipi: 'turist'
-});
-```
-
-#### `topluRandevuKontrol(ulkeler: string[], options?: KontrolOptions): Promise<RandevuKontrolSonuc[]>`
-
-Check multiple countries with rate limiting.
-
-```typescript
-const results = await checker.topluRandevuKontrol([
-  'fransa',
-  'hollanda',
-  'almanya'
-]);
-```
-
-#### `tumUlkelerKontrol(options?: KontrolOptions): Promise<RandevuKontrolSonuc[]>`
-
-Check all supported countries.
-
-```typescript
-const allResults = await checker.tumUlkelerKontrol();
-```
-
-#### `vizeMerkeziBilgisi(ulke: string): VizeMerkezi | null`
-
-Get visa center information for a country.
-
-```typescript
-const info = checker.vizeMerkeziBilgisi('fransa');
-// {
-//   ulke: 'fransa',
-//   url: 'https://france-visas.gouv.fr/...',
-//   tip: 'vfs-global',
-//   sehirler: ['ankara', 'istanbul', 'izmir'],
-//   telefonlar: { ankara: '+90 312 455 4545', ... }
-// }
-```
-
-#### `vizeMerkezleriListele(): Array<VizeMerkezi & { ulke: string }>`
-
-List all visa centers.
-
-```typescript
-const centers = checker.vizeMerkezleriListele();
-```
-
-#### `sehreGoreVizeMerkezleri(sehir: string): Array<...>`
-
-Filter visa centers by city.
-
-```typescript
-const ankaraCenters = checker.sehreGoreVizeMerkezleri('ankara');
-```
-
-## 🔧 TypeScript Types
-
-```typescript
-interface RandevuKontrolSonuc {
-  ulke: string;
-  sehir?: string;
-  vizeTipi?: string;
-  durum: 'musait' | 'dolu' | 'bilinmiyor' | 'hata' | 'timeout';
-  mesaj: string;
-  url: string;
-  siteErisilebilir?: boolean;
-  httpDurum?: number;
-  kontrolTarihi: Date;
-  not?: string;
-}
-
-interface VizeMerkezi {
-  url: string;
-  tip: 'vfs-global' | 'bls-international' | 'konsolosluk';
-  sehirler: string[];
-  telefonlar: Record<string, string>;
+```json
+{
+  "ulke": "almanya",
+  "sehir": "ankara",
+  "vizeTipi": "turist"
 }
 ```
 
-## ✨ Features
+4. "Execute" tıkla
+5. Sonuçları gör
 
-- ✅ **TypeScript First** - Full type safety and IntelliSense support
-- ✅ **Rate Limiting** - Built-in delays to respect server resources
-- ✅ **Error Handling** - Comprehensive error management
-- ✅ **Timeout Protection** - 10-second timeout for all requests
-- ✅ **17+ Countries** - Support for major Schengen countries
-- ✅ **Multiple Cities** - Ankara, Istanbul, Izmir support
-- ✅ **Modern ES2020** - Clean, modern JavaScript
+## 🔍 Mevcut Endpoint'ler
 
-## 🛡️ Best Practices
+- **GET** `/api/schengen-kontrol` - Schengen kontrolü
+- **POST** `/api/randevu-kontrol` - Tek ülke randevu kontrolü
+- **POST** `/api/toplu-kontrol` - Çoklu ülke kontrolü
+- **POST** `/api/tum-ulkeler-kontrol` - Tüm ülkeler
+- **GET** `/api/vize-merkezi/{ulke}` - Vize merkezi bilgisi
+- **GET** `/api/vize-merkezleri` - Tüm vize merkezleri
+- **GET** `/api/vize-merkezleri/sehir/{sehir}` - Şehre göre merkezler
 
-```typescript
-// ✅ Good: Use rate limiting
-const checker = new SchengenChecker({ rateLimit: 2000 });
+## 💡 İpuçları
 
-// ✅ Good: Handle errors
-try {
-  const result = await checker.musaitRandevuKontrol('fransa');
-} catch (error) {
-  console.error('Check failed:', error);
-}
-
-// ✅ Good: Use for educational purposes
-const info = checker.vizeMerkeziBilgisi('fransa');
-console.log('Contact:', info.telefonlar.ankara);
-
-// ❌ Bad: Don't spam requests
-// ❌ Bad: Don't use for automated booking
-// ❌ Bad: Don't bypass official systems
-```
-
-## 📦 Package Info
-
-- **Size:** ~50KB (minified)
-- **Dependencies:** axios
-- **Node.js:** >=18.0.0
-- **TypeScript:** >=5.0.0
-
-## 🔄 Migration from v1.x
-
-```typescript
-// v1.x (JavaScript)
-const SchengenRandevu = require('schengen-randevu-checker');
-const checker = new SchengenRandevu({ ulke: 'fransa' });
-
-// v2.x (TypeScript)
-import { SchengenChecker } from 'schengen-randevu-checker';
-const checker = new SchengenChecker({ sehir: 'ankara' });
-```
-
-## 🤝 Contributing
-
-Contributions are welcome! Please read our contributing guidelines.
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing`)
-3. Commit your changes (`git commit -m 'feat: Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing`)
-5. Open a Pull Request
-
-## 📝 License
-
-MIT © [İhsan Baki Doğan](https://github.com/ibidi)
-
-## 🔗 Links
-
-- **GitHub:** https://github.com/ibidi/schengen-randevu-checker
-- **npm:** https://www.npmjs.com/package/schengen-randevu-checker
-- **Issues:** https://github.com/ibidi/schengen-randevu-checker/issues
-
-## � C hangelog
-
-### [2.0.0] - 2025-11-13
-
-**🎉 Major Release - TypeScript Rewrite**
-
-#### Added
-- ✅ Full TypeScript support with type definitions
-- ✅ Modern ES2020 syntax
-- ✅ Comprehensive type safety
-- ✅ 17+ Schengen countries support
-- ✅ Rate limiting built-in
-- ✅ Timeout protection (10s)
-- ✅ Better error handling
-- ✅ Multiple city support (Ankara, Istanbul, Izmir)
-
-#### Changed
-- 🔄 Complete rewrite from JavaScript to TypeScript
-- 🔄 Improved API design
-- 🔄 Better naming conventions
-- 🔄 Enhanced documentation
-
-#### Breaking Changes
-- ⚠️ Constructor options changed
-- ⚠️ Method signatures updated
-- ⚠️ Response types restructured
-
-**Migration Guide:**
-```typescript
-// v1.x
-const checker = new SchengenRandevu({ ulke: 'fransa' });
-
-// v2.x
-const checker = new SchengenChecker({ sehir: 'ankara' });
-```
-
-### [1.2.0] - 2025-11-13
-
-#### Added
-- Database support (MongoDB, Supabase)
-- Export/Import functionality (JSON, CSV)
-- Statistics and analytics
-- Personal appointment tracking
-
-### [1.0.0] - 2025-11-13
-
-#### Initial Release
-- Basic appointment checking
-- JavaScript implementation
-- 25+ Schengen countries support
-- VFS Global, BLS International support
+- Her endpoint için örnek request/response görebilirsiniz
+- Schema bilgileri otomatik gösterilir
+- Direkt tarayıcıdan test edebilirsiniz
+- JSON formatında response alırsınız
 
 ## 👨‍💻 Author
 
 **İhsan Baki Doğan**
+
 - Email: info@ihsanbakidogan.com
 - GitHub: [@ibidi](https://github.com/ibidi)
+
+## 👨‍💻 Contributor
+
+**Nazif Karaca**
+
+- Email: nazif808@gmail.com
+- GitHub: [@nazif](https://github.com/nazifkaraca)
 
 ---
 

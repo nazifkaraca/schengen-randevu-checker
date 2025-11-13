@@ -1,7 +1,7 @@
 {
   "name": "schengen-randevu-checker",
   "version": "1.0.0",
-  "description": "Schengen visa appointment checker and manager for Turkey - 25 countries supported with real-time availability check",
+  "description": "Educational tool for Schengen visa center information management - Contact details, URLs, and personal appointment tracking (NOT for automated booking)",
   "main": "index.js",
   "scripts": {
     "test": "node example.js",
@@ -44,6 +44,7 @@
   },
   "dependencies": {
     "axios": "^1.6.0",
-    "cheerio": "^1.0.0-rc.12"
+    "cheerio": "^1.0.0-rc.12",
+    "schengen-randevu-checker": "^1.0.0"
   }
 }

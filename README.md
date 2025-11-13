@@ -188,7 +188,42 @@ npm run kontrol
 npm run toplu-kontrol
 ```
 
-## ⚠️ Önemli Notlar
+## ⚠️ ÖNEMLİ YASAL UYARI
+
+**🚨 BU MODÜLÜ KULLANMADAN ÖNCE MUTLAKA OKUYUN:**
+
+### Yasal Sorumluluk
+
+Bu modül **sadece eğitim ve bilgilendirme amaçlıdır**. Resmi konsolosluk ve vize merkezi web sitelerine otomatik erişim yapmak:
+
+- ❌ **Hizmet şartlarına aykırı olabilir**
+- ❌ **Yasal sorunlara yol açabilir**
+- ❌ **Hesap yasaklanmasına neden olabilir**
+- ❌ **IP adresinizin engellenmesine sebep olabilir**
+
+### Kullanım Kısıtlamaları
+
+Bu modül:
+- ✅ Vize merkezi bilgilerini (telefon, adres, URL) listelemek için kullanılabilir
+- ✅ Kendi randevu kayıtlarınızı yönetmek için kullanılabilir
+- ❌ **Resmi sitelere otomatik bot istekleri göndermek için KULLANILMAMALIDIR**
+- ❌ **Randevu bulmak için sürekli site taraması yapmak için KULLANILMAMALIDIR**
+
+### Önerilen Kullanım
+
+1. **Bilgi Amaçlı:** Vize merkezi iletişim bilgilerini öğrenmek
+2. **Kişisel Kayıt:** Kendi randevu bilgilerinizi kaydetmek
+3. **Eğitim:** Node.js ve HTTP istekleri öğrenmek
+
+### Resmi Randevu İçin
+
+Randevu almak için **mutlaka** resmi kanalları kullanın:
+- Konsolosluk resmi web siteleri
+- VFS Global resmi platformu
+- BLS International resmi platformu
+- Telefon ile randevu hattı
+
+## ⚠️ Teknik Notlar
 
 - Bu modül site erişilebilirliğini kontrol eder
 - Kesin randevu bilgisi için resmi siteleri ziyaret edin
@@ -212,4 +247,23 @@ MIT
 
 ---
 
-**Not:** Bu modül bilgilendirme amaçlıdır. Resmi vize başvuruları için ilgili konsolosluk ve vize merkezlerinin resmi sitelerini kullanın.
+## 📜 Sorumluluk Reddi (Disclaimer)
+
+**BU YAZILIM "OLDUĞU GİBİ" SAĞLANMAKTADIR.**
+
+Yazar ve katkıda bulunanlar:
+- Bu yazılımın kullanımından kaynaklanan hiçbir yasal sorumluluk kabul etmez
+- Herhangi bir garanti vermez
+- Kullanıcıların yerel yasalara ve hizmet şartlarına uygun hareket etmesini bekler
+
+**Kullanıcı Sorumluluğu:**
+- Bu modülü kullanarak, tüm yasal sorumluluğu kabul etmiş olursunuz
+- Resmi web sitelerinin hizmet şartlarına uymak sizin sorumluluğunuzdadır
+- Otomatik bot kullanımı yasak olan sitelere erişim yapmayın
+
+**Önerilen Kullanım:**
+Bu modülü sadece bilgi edinme, eğitim ve kişisel kayıt yönetimi için kullanın. Resmi randevu işlemleri için mutlaka resmi kanalları kullanın.
+
+---
+
+**Not:** Bu modül bilgilendirme ve eğitim amaçlıdır. Resmi vize başvuruları için ilgili konsolosluk ve vize merkezlerinin resmi sitelerini kullanın.

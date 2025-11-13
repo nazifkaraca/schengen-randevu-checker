@@ -1,6 +1,22 @@
 /**
  * Schengen Vize Randevu Modülü
- * Schengen ülkeleri için vize randevu kontrolü ve yönetimi
+ * 
+ * ⚠️ YASAL UYARI:
+ * Bu modül sadece eğitim ve bilgilendirme amaçlıdır.
+ * Resmi konsolosluk ve vize merkezi sitelerine otomatik bot istekleri
+ * göndermek hizmet şartlarına aykırı olabilir ve yasal sorunlara yol açabilir.
+ * 
+ * Kullanım Amacı:
+ * - Vize merkezi iletişim bilgilerini listelemek
+ * - Kişisel randevu kayıtlarını yönetmek
+ * - Eğitim ve öğrenme
+ * 
+ * KULLANMAYIN:
+ * - Otomatik randevu taraması için
+ * - Sürekli site kontrolü için
+ * - Bot/scraping amaçlı
+ * 
+ * Resmi randevu işlemleri için mutlaka resmi kanalları kullanın.
  */
 
 const axios = require('axios');
